@@ -2,9 +2,9 @@ library(rvest)
 
 extract_words <- function(link) {
   # download the html and turn it into an XML file with read_html()
-  job <- read_html(url1)
+  job <- read_html(link)
   # extract specific nodes with html_nodes() using css selector
-  skills <- html_nodes(job1, ".description__text--rich li")
+  skills <- html_nodes(job, ".description__text--rich li")
   # extract content from nodes
   skills <- html_text(skills)
   # remove punctuation
