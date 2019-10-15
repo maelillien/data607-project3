@@ -15,6 +15,11 @@ library(tidyverse)
 ```
 
 ```{r}
+wlist <- read.csv('https://raw.githubusercontent.com/dhairavc/DATA607/master/whitelist.csv')
+```
+
+
+```{r}
 extract_words <- function(link) {
   # download the html and turn it into an XML file with read_html()
   job <- read_html(link)
@@ -26,6 +31,8 @@ extract_words <- function(link) {
   words <- gsub('[[:punct:]]', '', skills)
   # split sentences into individual words
   words <- unlist(strsplit(words, " "))
+  words <- tolower(words)
+  #words <- words[words %in% wlist$Whitelist]
   # count the number of occurences of each word
   wordcount <- table(words)
   wordcount_df <- as.data.frame(wordcount)
@@ -56,6 +63,14 @@ skill_count <- do.call(rbind, counts)
 
 ```{r}
 # sum multiple occurences of the same word
-total_skill_count <- skill_count %>% group_by(words) %>% summarize(F = sum(Freq)) %>% arrange(desc(F))
+total_skill_count <- skill_count %>% 
+  group_by(words) %>% 
+  summarize(Occurences = sum(Freq)) %>% 
+  arrange(desc(Occurences ))
 total_skill_count
 ```
+```{r}
+# apply whitelist
+total_skill_count %>% filter(words %in% wlist$Whitelist)
+```
+
