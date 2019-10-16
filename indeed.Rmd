@@ -1,0 +1,108 @@
+---
+title: "indeed"
+author: "Mael Illien"
+date: "10/15/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(tidyverse)
+```
+
+```{r}
+wlist <- read.csv('https://raw.githubusercontent.com/dhairavc/DATA607/master/whitelist.csv')
+```
+
+```{r}
+extract_words <- function(link) {
+  # download the html and turn it into an XML file with read_html()
+  job <- read_html(link)
+  # extract specific nodes with html_nodes() using css selector
+  skills <- html_nodes(job, "li")
+  # extract content from nodes
+  skills <- html_text(skills)
+  # remove punctuation
+  words <- gsub('[[:punct:]]', '', skills)
+  # split sentences into individual words
+  words <- unlist(strsplit(words, " "))
+  words <- tolower(words)
+  #words <- words[words %in% wlist$Whitelist]
+  # count the number of occurences of each word
+  wordcount <- table(words)
+  wordcount_df <- as.data.frame(wordcount)
+  return(wordcount_df)
+}
+```
+
+```{r}
+# save the url which contains the search results
+rooturl <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY"
+domain <- "https://www.indeed.com"
+# for each job, extract the href attribute from each job using the css selector
+jobs <- read_html(rooturl)
+# links <- html_nodes(jobs, "a.result-card__full-card-link")
+# links <- html_attr(links, "href")
+
+nums <- 0:99
+ids <- unlist(paste0("#sja", nums))
+
+counts <- list()
+
+for (i in 1:length(ids)) {
+  link <- html_nodes(jobs, ids[i])
+  link <- html_attr(link, "href")
+  #print(link)
+  link <- str_c(domain,link)
+  #print(link)
+  df <- extract_words(link)
+  counts[[i]] <- df
+}
+
+skill_count <- do.call(rbind, counts)
+```
+
+```{r eval=FALSE, include=FALSE}
+# apply the extract_words function to each link
+counts <- list()
+
+for (i in 1:length(links)) {
+    df <- extract_words(links[i])
+    counts[[i]] <- df
+}
+# combine into a dataframe
+skill_count <- do.call(rbind, counts)
+```
+
+
+```{r}
+# save the url which contains the search results
+
+# for each job, extract the href attribute from each job using the css selector
+# jobs <- read_html(rooturl)
+# links <- html_nodes(jobs, "#sja0")
+# links <- html_attr(links, "href")
+# job <- read_html(str_c(domain,links))
+# skills <- html_nodes(job, "li")
+# skills <- html_text(skills)
+```
+
+
+```{r}
+# sum multiple occurences of the same word
+total_skill_count <- skill_count %>% 
+  group_by(words) %>% 
+  summarize(Occurences = sum(Freq)) %>% 
+  arrange(desc(Occurences ))
+total_skill_count
+```
+
+```{r}
+# apply whitelist
+total_skill_count %>% filter(words %in% wlist$Whitelist)
+```
+
