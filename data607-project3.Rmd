@@ -1,6 +1,6 @@
 ---
-title: "linkedin"
-author: "Mael Illien"
+title: "Most Valued Data Science Skills"
+author: "Mael Illien, Dhairav Chhatbar, Charlie Rosemond, Matt Mayor, Bryan Persaud"
 date: "10/14/2019"
 output: html_document
 ---
@@ -9,13 +9,26 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, message=FALSE}
 library(rvest)
 library(tidyverse)
 ```
 
+
+# Motivation
+William Edwards Deming is known for the quote “In God we trust, all others must bring data.” It is clear that data-driven decision making is superior and is in these times a requirement to maintain a competitive edge. Every industry now treats their data as an asset to get insights from and is a foundation in the decision making process. Turning data into insights not only requires appropriate systems in place, but also requires the appropriate subject matter experts to interpret and discover what the data has to say.  
+
+Data Science is the art of analyzing data to gain knowledge in order to make business decisions. Data Science at its core is a union of mathematics, statistics, and programming disciplines. Data Scientists need to possess various skills such as data/quantitative analysis, R/Python programming, Machine Learning, Data Visualization, etc. Some skills may be more important than others depending on the task at hand.  
+
+As future Data Scientists we seek to understand what are some of the most important skills to possess. We will gather this consensus by conducting exploratory analysis on what skills employers are looking for through job listings on LinkedIn and Indeed.   
+
+
+# Approach
+<IN PROGRESS>
+
+# Data Aggregation
 ```{r}
-wlist <- read.csv('https://raw.githubusercontent.com/dhairavc/DATA607/master/whitelist.csv')
+wlist <- read.csv('https://raw.githubusercontent.com/dhairavc/data607-project3/master/whitelist.csv')
 ```
 
 The extract_words function will take a link to a particular job post and the selector which contains the list of interest and return a dataframe of words in that job post's skills section and the number of occurences of each particular words.
@@ -80,25 +93,42 @@ get_DS_skills <- function(word_count) {
 linkedin_top_skills <- function() {
   # save the url which contains the search results
   rooturl <- "https://www.linkedin.com/jobs/data-scientist-jobs/"
+  
   # for each job, extract the href attribute from each job using the css selector
   search_results <- read_html(rooturl)
   links_to_jobs <- search_results %>% 
     html_nodes("a.result-card__full-card-link") %>% 
     html_attr("href")
 
+  for (x in 1:39) {
+  paged_url <- "https://www.linkedin.com/jobs/search/?keywords=data%20scientist&start="
+  paged_url <- paste(paged_url, 25*x, collapse = NULL, sep = "")
+  
+  jobs <- read_html(paged_url)
+  links_temp <- html_nodes(jobs, "a.result-card__full-card-link")
+  links_temp <- html_attr(links_temp, "href")
+  links_to_jobs <- c(links_to_jobs, links_temp)
+
+}
+  
   # for Linkedin job posts, skills are located in <li> tags with the following selector
   selector <- ".description__text--rich li"
+  
   # get word counts from the list of links to job posts
   word_count <- get_word_counts(links_to_jobs, selector)
   
   # uncomment this to see the results pre-whitelist
-  print(word_count)
+  #print(word_count)
   
   # get data science related skills from the above word count
   skill_count <- get_DS_skills(word_count)
+  
+  
   return(skill_count)
 }
 ```
+
+
 
 ## Extracting Data Science Skills from Indeed
 
@@ -107,7 +137,8 @@ indeed_top_skills <- function() {
   # save the url which contains the search results
   domain <- "https://www.indeed.com"
   rooturl <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY"
-  # for each job, extract the href attribute from each job using the css selector
+ 
+   # for each job, extract the href attribute from each job using the css selector
   search_results <- read_html(rooturl)
  
   # create a list of links by extracting the href attribute from the nodes
@@ -116,28 +147,52 @@ indeed_top_skills <- function() {
     html_children() %>%
     html_attr("href")
   
+    for (x in 1:50) {
+   paged_url <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY&start="
+   paged_url <- paste(paged_url, 10*x, collapse = NULL, sep = "")
+   
+   search_results <- read_html(paged_url)
+   temp_paths_to_jobs <- search_results %>%
+    html_nodes(".title") %>%
+    html_children() %>%
+    html_attr("href")
+   
+   paths_to_jobs <- c(paths_to_jobs, temp_paths_to_jobs)
+}
+  
   # contatenate paths with the domain name to create valid links
   links_to_jobs <- str_c(domain, paths_to_jobs)
   
   # for Indeed job posts, skills are located in <li> tags so the selector is simple
   selector <- "li"
-  # get word counts from the list of links to job posts
+ 
+   # get word counts from the list of links to job posts
   word_count <- get_word_counts(links_to_jobs, selector)
   
   # uncomment this to see the results pre-whitelist
-  print(word_count)
+  #print(word_count)
   
   # get data science related skills from the above word count
   skill_count <- get_DS_skills(word_count)
+  
   return(skill_count)
 }
 ```
 
+
 ## Web Scraping
 
 ```{r}
-#linkedin <- linkedin_top_skills()
+linkedin <- linkedin_top_skills()
 indeed <- indeed_top_skills()
+
 ```
+# SQL Storage
+<IN PROGRESS>
+
+# Analysis & Visulization
+<IN PROGRESS>
 
 
+# Findings & Conclusion
+<IN PROGRESS>
