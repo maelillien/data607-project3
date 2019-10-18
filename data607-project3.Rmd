@@ -170,9 +170,17 @@ indeed_top_skills <- function() {
 
 ## Web Scraping
 
+Call the functions defined above and scrape the data from the two sources.
+
 ```{r}
 linkedin <- linkedin_top_skills()
 indeed <- indeed_top_skills()
+```
+
+Write the dataframes to a .csv file
+```{r message=FALSE, warning=FALSE}
+write.csv(linkedin, file = "linkedin.csv", row.names = FALSE, col.names = TRUE, sep = "", quote = FALSE)
+write.csv(indeed, file = "indeed.csv", row.names = FALSE, col.names = TRUE, sep = "", quote = FALSE)
 ```
 
 # SQL Storage
