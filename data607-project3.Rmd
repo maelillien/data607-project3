@@ -326,10 +326,17 @@ head(dbGetQuery(con2, "SELECT JobBoard.Board_Name, Skill_Name.Word, Board_Summar
 indeed$site <- "Indeed"
 linkedin$site <- "LinkedIn"
 append <- bind_rows(indeed, linkedin)
+is_outlier <- function(x) {
+  return(x < quantile(x, 0.25) - 1.5 * IQR(x) | x > quantile(x, 0.75) + 1.5 * IQR(x))
+}
 ggplot(data = append, mapping=aes(x=site, y=occurrences)) +
-  geom_boxplot(outlier.color="red") +
+  geom_boxplot() +
   labs(title="Distribution of occurrences by site", x="Site", y="Occurrences") +
-  coord_flip()
+  coord_flip() +
+  geom_label_repel(aes(label = ifelse(is_outlier(occurrences),as.character(words),'')),
+                  box.padding   = 0.4, 
+                  point.padding = 0.3,
+                  segment.color = 'grey50')
 ```
 
 
@@ -353,14 +360,14 @@ wordcloud(words=indeed$words, freq=indeed$occurrences, main="Title")
 ## Bar Plots
 ```{r bars, eval=TRUE}
 ##LinkedIn
-ggplot(data = linkedin[1:10,], aes(x=reorder(words, -occurrences), y=occurrences)) +
-  geom_bar(stat="identity") +
-  labs(title="Top 10 Data Science Skills per LinkedIn", x="Skills", y="Occurrences (#)") +
+ggplot(data = linkedin[is_outlier(linkedin$occurrences),], aes(x=reorder(words, -occurrences), y=occurrences)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Top Data Science Skills per LinkedIn", x="Skills", y="Occurrences (#)") +
   theme(axis.text.x=element_text(angle=45, hjust=1))
 ##Indeed
-ggplot(data = indeed[1:10,], aes(x=reorder(words, -occurrences), y=occurrences)) +
-  geom_bar(stat="identity") +
-  labs(title="Top 10 Data Science Skills per Indeed", x="Skills", y="Occurrences (#)") +
+ggplot(data = indeed[is_outlier(indeed$occurrences),], aes(x=reorder(words, -occurrences), y=occurrences)) +
+  geom_bar(stat="identity", fill="red") +
+  labs(title="Top Data Science Skills per Indeed", x="Skills", y="Occurrences (#)") +
   theme(axis.text.x=element_text(angle=45, hjust=1))
 ```
 
@@ -368,11 +375,11 @@ ggplot(data = indeed[1:10,], aes(x=reorder(words, -occurrences), y=occurrences))
 ```{r points, eval=TRUE}
 library(ggplot2)
 library(ggrepel)
-merge <- merge(indeed, linkedin, by="words")
+merge <- merge(indeed, linkedin, by="words") #Only includes common words across both sites
 ggplot(data = merge, aes(x = occurrences.x, y = occurrences.y)) + 
   geom_point() +
   labs(title="Plot of occurrences of common words", x="Occurrences on Indeed (#)", y="Occurrences on Linkedin (#)") +
-  geom_label_repel(aes(label = ifelse(occurrences.x>300,as.character(words),'')),
+  geom_label_repel(aes(label = ifelse((is_outlier(occurrences.x) | is_outlier(occurrences.y)), as.character(words),'')),
                   box.padding   = 0.35, 
                   point.padding = 0.5,
                   segment.color = 'grey50') 
