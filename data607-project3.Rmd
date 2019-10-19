@@ -153,17 +153,12 @@ linkedin_top_skills <- function() {
   
   # for Linkedin job posts, skills are located in <li> tags with the following selector
   selector <- ".description__text--rich li"
-  
   # get word counts from the list of links to job posts
   word_count <- get_word_counts(links_to_jobs, selector)
-  
   # uncomment this to see the results pre-whitelist
   #print(word_count)
-  
   # get data science related skills from the above word count
   skill_count <- get_DS_skills(word_count)
-  
-  
   return(skill_count)
 }
 ```
@@ -215,19 +210,14 @@ indeed_top_skills <- function() {
   
   # contatenate paths with the domain name to create valid links
   links_to_jobs <- str_c(domain, paths_to_jobs)
-  
   # for Indeed job posts, skills are located in <li> tags so the selector is simple
   selector <- "li"
- 
-   # get word counts from the list of links to job posts
+  # get word counts from the list of links to job posts
   word_count <- get_word_counts(links_to_jobs, selector)
-  
   # uncomment this to see the results pre-whitelist
   #print(word_count)
-  
   # get data science related skills from the above word count
   skill_count <- get_DS_skills(word_count)
-  
   return(skill_count)
 }
 ```
