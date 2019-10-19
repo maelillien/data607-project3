@@ -19,12 +19,12 @@ As future Data Scientists we seek to understand what are some of the most import
 # Approach
 Given the prompt “Which are the most valued data science skills?”, our team has brainstormed various sources of information that describe the knowledge or skills sought after by current or prospective employers of data scientists. Job listings represent a logical starting point, and we have chosen to focus on LinkedIn and Indeed, two of the most popular online homes for this information.
 
-Our general approach consists of  
-1) scraping job listings from LinkedIn and Indeed  
-2) applying a whitelist of data science-relevant words, paired or non-paired, to the scraped text  
-3) storing the resulting sets in a SQL database  
-4) performing an exploratory analysis  
-For scraping, we use R's rvest package, a counterpart to Python's Beautiful Soup. Our whitelist is informed by a review of several online journalistic sources and includes tools, skills, and knowledge bases like "Python", "Web Scraping", and "Machine Learning", among many others. We use a XXXX database for storage. And our analysis relies on R's tidyverse collection of packages.
+Our general approach consists of:  
+1) scraping job listings from LinkedIn and Indeed;  
+2) applying a whitelist of data science-relevant words, paired or non-paired, to the scraped text; 
+3) storing the resulting sets in a SQL database; and  
+4) performing an exploratory analysis. 
+For scraping, we use R's rvest package and focus on results from searches for "data science" in the New York City area. Our whitelist is informed by a review of several online journalistic sources and includes tools, skills, and knowledge bases like "Python", "Web Scraping", and "Machine Learning", among many others. We use MySQL for database storage. And our analysis relies on R's tidyverse collection of packages.
 
 Our workflow moves from preparation to scraping and pre-processing to storage to analysis and visualization. Each stage is described below in more detail.
 
