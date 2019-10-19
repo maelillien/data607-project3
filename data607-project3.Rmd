@@ -14,6 +14,8 @@ library(rvest)
 library(tidyverse)
 library(wordcloud)
 library(ggrepel)
+library(png)
+library(grid)
 ```
 
 
@@ -50,7 +52,6 @@ Indeed.com (2019). "Data scientist resume samples". Indeed Career Guide. Accesse
 wlist <- read.csv('https://raw.githubusercontent.com/dhairavc/data607-project3/master/whitelist.csv')
 wlist
 ```
-
 
 #Data Pre-Processing and Scraping Functions
 Data pre-processing uses five user-defined functions to extract words from job listings, and specifically, their skills sections; aggregate and sort the extracted words; apply the whitelist to filter out irrelevant words; and apply the prior three functions to each of LinkedIn and Indeed. Each function is described in more detail below.
@@ -115,7 +116,21 @@ get_DS_skills <- function(word_count) {
 ```
 
 ## Extracting Data Science Skills from LinkedIn
-A function that extracts words describing data science knowledge and skills from LinkedIn search results
+
+Many results are returned when searching for data scientist jobs, each containing a `a.result-card__full-card-link` element as shown below. These elements contain `href` attributes which contain the links to the actual job pages. We loop through the search results to extract a list of links to individual job posts.
+
+```{r fig.width=10, fig.height=5,echo=FALSE}
+img <- readPNG("linkedin_element.png")
+grid.raster(img)
+```
+
+The skills of interest are found in list form between `<ul>` and `<li>` tags and the Selector Gadget tool produces the selector `.description__text--rich li` which we use to extract the content contained between each `<li>` tag.
+
+```{r fig.width=5, fig.height=5,echo=FALSE}
+img <- readPNG("linkedin_skills.png")
+grid.raster(img)
+```
+
 ```{r}
 linkedin_top_skills <- function() {
   # save the url which contains the search results
@@ -155,7 +170,21 @@ linkedin_top_skills <- function() {
 
 
 ## Extracting Data Science Skills from Indeed
-A function that extracts words describing data science knowledge and skills from Indeed search results
+
+In the case of sourcing data from Indeed, the links are actually contained in the `href` attributes of children of `<div class="title">` elements. 
+
+```{r fig.width=10, fig.height=5,echo=FALSE}
+img <- readPNG("indeed_element.png")
+grid.raster(img)
+```
+
+As before, the skills of interest are found in list form between `<ul>` and `<li>` tags.
+
+```{r fig.width=5, fig.height=5,echo=FALSE}
+img <- readPNG("indeed_skills.png")
+grid.raster(img)
+```
+
 ```{r}
 indeed_top_skills <- function() {
   # save the url which contains the search results
@@ -204,7 +233,7 @@ indeed_top_skills <- function() {
 ```
 
 
-# Web Scraping
+# Web Scraping and Data Export
 
 Call the functions defined above and scrape the data from the two sources and write the dataframes to a .csv file.
 
