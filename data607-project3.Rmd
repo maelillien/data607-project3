@@ -205,11 +205,16 @@ indeed_top_skills <- function() {
 
 
 # Web Scraping
-In this stage, we apply the site-specific functions to extract, aggregate, filter, then store the words in data frames.
+
+Call the functions defined above and scrape the data from the two sources and write the dataframes to a .csv file.
 
 ```{r}
 linkedin <- linkedin_top_skills()
+write.csv(linkedin, file = "linkedin.csv", row.names = FALSE, col.names = TRUE, sep = "", quote = FALSE)
+```
+```{r message=FALSE, warning=FALSE}
 indeed <- indeed_top_skills()
+write.csv(indeed, file = "indeed.csv", row.names = FALSE, col.names = TRUE, sep = "", quote = FALSE)
 ```
 
 # SQL Storage
