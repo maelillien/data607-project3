@@ -141,22 +141,20 @@ grid.raster(img)
 ```{r}
 linkedin_top_skills <- function() {
   # save the url which contains the search results
-  rooturl <- "https://www.linkedin.com/jobs/data-scientist-jobs/"
+  rooturl <- "https://www.linkedin.com/jobs/search/?keywords=data%20scientist&start="
   
   # for each job, extract the href attribute from each job using the css selector
-  search_results <- read_html(rooturl)
-  links_to_jobs <- search_results %>% 
-    html_nodes("a.result-card__full-card-link") %>% 
-    html_attr("href")
+  # create a list of links by extracting the href attribute from the nodes
     
-  for (x in 1:39) {
-    paged_url <- "https://www.linkedin.com/jobs/search/?keywords=data%20scientist&start="
-    paged_url <- paste(paged_url, 25*x, collapse = NULL, sep = "")
+  for (x in 0:39) {
+    paged_url <- paste(root_url, 25*x, collapse = NULL, sep = "")
   
-    jobs <- read_html(paged_url)
-    links_temp <- html_nodes(jobs, "a.result-card__full-card-link")
-    links_temp <- html_attr(links_temp, "href")
-    links_to_jobs <- c(links_to_jobs, links_temp)
+    search_results <- read_html(paged_url)
+    temp_paths_to_jobs <- search_results %>%
+     html_nodes("a.result-card__full-card-link") %>%
+     html_attr("href")
+    
+    links_to_jobs <- c(links_to_jobs, temp_paths_to_jobs)
   }
   
   # for Linkedin job posts, skills are located in <li> tags with the following selector
@@ -197,28 +195,21 @@ grid.raster(img)
 indeed_top_skills <- function() {
   # save the url which contains the search results
   domain <- "https://www.indeed.com"
-  rooturl <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY"
+  rooturl <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY&start="
  
-   # for each job, extract the href attribute from each job using the css selector
-  search_results <- read_html(rooturl)
- 
+  # for each job, extract the href attribute from each job using the css selector
   # create a list of links by extracting the href attribute from the nodes
-  paths_to_jobs <- search_results %>%
-    html_nodes(".title") %>%
-    html_children() %>%
-    html_attr("href")
   
-   for (x in 1:50) {
-    paged_url <- "https://www.indeed.com/jobs?q=data+science&l=New+York+City%2C+NY&start="
-    paged_url <- paste(paged_url, 10*x, collapse = NULL, sep = "")
+  for (x in 0:50) {
+   paged_url <- paste(root_url, 10*x, collapse = NULL, sep = "")
    
-    search_results <- read_html(paged_url)
-    temp_paths_to_jobs <- search_results %>%
-      html_nodes(".title") %>%
-      html_children() %>%
-      html_attr("href")
+   search_results <- read_html(paged_url)
+   temp_paths_to_jobs <- search_results %>%
+     html_nodes(".title") %>%
+     html_children() %>%
+     html_attr("href")
    
-    paths_to_jobs <- c(paths_to_jobs, temp_paths_to_jobs)
+   paths_to_jobs <- c(paths_to_jobs, temp_paths_to_jobs)
   }
   
   # contatenate paths with the domain name to create valid links
