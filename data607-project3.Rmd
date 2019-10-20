@@ -386,4 +386,6 @@ ggplot(data = merge, aes(x = occurrences.x, y = occurrences.y)) +
 ```
 
 # Findings & Conclusion
-<IN PROGRESS>
+# This is what Bryan is adding.
+
+We chose to look at LinkedIn and Indeed since they host the most job postings for data scientists and took the most common words from both sites. We then filtered out the words that relate to data science skills from a whitelist we created from article and posts that talked about the most demanded and needed data science skills. We created a dataframe for the words and stored them in a SQL database. Based on the plots, we see that LinkedIn and Indeed both have similar words with a few differences. LinkedIn seems to say to have skills in SAS(Statistical Analytics System), Statistics, and Python. Indeed seems to say to have skills in Python, SQL, and Modeling. Both talk about having communication and research skills. In conclusion, the most valued data science skills are the programming and mathematical skills, preferably Python. SQL, and R for programming and statistics for mathematical. Also communication, research, and modeling skills are valued skills a data scientist should consider valuable skills to have.
