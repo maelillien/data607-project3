@@ -326,11 +326,12 @@ append <- bind_rows(indeed, linkedin)
 is_outlier <- function(x) {
   return(x < quantile(x, 0.25) - 1.5 * IQR(x) | x > quantile(x, 0.75) + 1.5 * IQR(x))
 }
-ggplot(data = append, mapping=aes(x=site, y=occurrences)) +
+append %>% group_by(site) %>% mutate(outlier=ifelse(is_outlier(occurrences), as.character(words), "")) %>%
+ggplot(., aes(x=site, y=occurrences)) +
   geom_boxplot() +
   labs(title="Distribution of occurrences by site", x="Site", y="Occurrences") +
   coord_flip() +
-  geom_label_repel(aes(label = ifelse(is_outlier(occurrences),as.character(words),'')),
+  geom_label_repel(aes(label = outlier),
                   box.padding   = 0.4, 
                   point.padding = 0.3,
                   segment.color = 'grey50')
@@ -345,13 +346,13 @@ layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
 par(mar=rep(0, 4))
 plot.new()
 text(x=0.5, y=0.5, "Most common words on LinkedIn")
-wordcloud(words=linkedin$words, freq=linkedin$occurrences, main="Title")
+wordcloud(words=linkedin$words, freq=linkedin$occurrences, main="Title", scale=c(3,0.3))
 ###Indeed
 layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
 par(mar=rep(0, 4))
 plot.new()
 text(x=0.5, y=0.5, "Most common words on Indeed")
-wordcloud(words=indeed$words, freq=indeed$occurrences, main="Title")
+wordcloud(words=indeed$words, freq=indeed$occurrences, main="Title", scale=c(3,0.3))
 ```
 
 ## Bar Plots
@@ -375,7 +376,7 @@ library(ggrepel)
 merge <- merge(indeed, linkedin, by="words") #Only includes common words across both sites
 ggplot(data = merge, aes(x = occurrences.x, y = occurrences.y)) + 
   geom_point() +
-  labs(title="Plot of occurrences of common words", x="Occurrences on Indeed (#)", y="Occurrences on Linkedin (#)") +
+  labs(title="Plot of occurrences of common words across sites", x="Occurrences on Indeed (#)", y="Occurrences on Linkedin (#)") +
   geom_label_repel(aes(label = ifelse((is_outlier(occurrences.x) | is_outlier(occurrences.y)), as.character(words),'')),
                   box.padding   = 0.35, 
                   point.padding = 0.5,
