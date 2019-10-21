@@ -142,7 +142,7 @@ grid.raster(img)
 ```{r}
 linkedin_top_skills <- function() {
   # save the url which contains the search results
-  rooturl <- "https://www.linkedin.com/jobs/search/?keywords=data%20scientist&start="
+  root_url <- "https://www.linkedin.com/jobs/search/?keywords=data%20scientist&start="
   
   # for each job, extract the href attribute from each job using the css selector
   # create a list of links by extracting the href attribute from the nodes
