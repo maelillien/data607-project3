@@ -2,7 +2,10 @@
 title: "Most Valued Data Science Skills"
 author: "Mael Illien, Dhairav Chhatbar, Charlie Rosemond, Matt Mayor, Bryan Persaud"
 date: "10/14/2019"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
